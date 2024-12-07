@@ -95,21 +95,19 @@ def run_module():
     if module.check_mode:
         module.exit_json(**result)
 
+    domain_name = module.params['domain_name']
+    cert_path = module.params['cert_path']
+    key_path = module.params['key_path']
+    ca_path = module.params['ca_path']
+
     # manipulate or modify the state as needed (this is going to be the
     # part where your module will do what it needs to do)
-    result['original_message'] = module.params['name']
-    result['message'] = 'goodbye'
+    result['message'] = 'Certificates were successfully renewed for domain: ' + domain_name
 
     # use whatever logic you need to determine whether or not this module
     # made any modifications to your target
     if module.params['new']:
         result['changed'] = True
-
-    # during the execution of the module, if there is an exception or a
-    # conditional state that effectively causes a failure, run
-    # AnsibleModule.fail_json() to pass in the message and the result
-    if module.params['name'] == 'fail me':
-        module.fail_json(msg='You requested this to fail', **result)
 
     # in the event of a successful module execution, you will want to
     # simple AnsibleModule.exit_json(), passing the key/value results
