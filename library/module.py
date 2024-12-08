@@ -100,6 +100,17 @@ def run_module():
     key_path = module.params['key_path']
     ca_path = module.params['ca_path']
 
+    cert_data = []
+    key_data = []
+
+    try:
+        with open(cert_path, 'r') as cert_file:
+            cert_data = cert_file.read()
+        with open(key_path, 'r') as key_file:
+            key_data = key_file.read()
+    except Exception as e:
+        module.fail_json(msg="Failed to read certificate or key file: %s" % e)
+
     # manipulate or modify the state as needed (this is going to be the
     # part where your module will do what it needs to do)
     result['message'] = 'Certificates were successfully renewed for domain: ' + domain_name
