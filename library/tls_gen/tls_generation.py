@@ -34,9 +34,16 @@ def generate_tls_certificate(hostname: str, cert_path: str, email: str, private_
                     x509.NameAttribute(NameOID.STATE_OR_PROVINCE_NAME, province),
                     x509.NameAttribute(NameOID.LOCALITY_NAME, u"San Francisco"),
                     x509.NameAttribute(NameOID.ORGANIZATION_NAME, company_name),
-                    x509.NameAttribute(NameOID.COMMON_NAME, u"mywebsite.com"),
+                    x509.NameAttribute(NameOID.COMMON_NAME, hostname),
                 ]
             )
+        )
+        .add_extension(
+            x509.SubjectAlternativeName(
+                [x509.DNSName(hostname)] + [x509.IPAddress(ipaddress.ip_address(ip)) for ip in
+                                                      ip_addresses or []]
+            ),
+            critical=False,
         )
         .sign(key, hashes.SHA256())
     )
@@ -81,5 +88,5 @@ def generate_tls_certificate(hostname: str, cert_path: str, email: str, private_
     certificate = acme_client.fetch_certificate(order)
 
     # Save certificate to file
-    with open("certificate.pem", "wb") as f:
+    with open(cert_path, "wb") as f:
         f.write(certificate)
